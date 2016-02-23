@@ -40,7 +40,7 @@ class ViewController: UIViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    hideAllField()
+    hideAllField(0)
     resizeBillFieldToBig()
     
     formatter.numberStyle = .CurrencyStyle
@@ -108,12 +108,13 @@ class ViewController: UIViewController {
   }
 
   func calculate(){
-    if (billField.text == ""){
-      hideAllField()
+    if (billField.text == "" || billField.text == Optional("0")){
+      hideAllField(0)
     } else {
-      showAllField()
+      showAllField(0)
       resizeBillFieldToSmall()
       billAmount = NSString(string: billField.text!.stringByReplacingOccurrencesOfString(",", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)).doubleValue
+      print(billField.text)
     }
     let tip = billAmount * Double(tipRate) / 100
     tipAmountLabel.text = String(tip)
@@ -130,22 +131,26 @@ class ViewController: UIViewController {
     label.text = formatter.stringFromNumber(total / Double(numberOfPeople))
   }
   
-  func hideAllField(){
-    tipRateView.alpha = 0
-    tipAmountView.alpha = 0
-    totalView.alpha = 0
-    totalForTwoView.alpha = 0
-    totalForThreeView.alpha = 0
-    totalForFourView.alpha = 0
+  func hideAllField(duration:Double){
+    UIView.animateWithDuration(duration, animations: {
+      self.tipRateView.alpha = 0
+      self.tipAmountView.alpha = 0
+      self.totalView.alpha = 0
+      self.totalForTwoView.alpha = 0
+      self.totalForThreeView.alpha = 0
+      self.totalForFourView.alpha = 0
+    })
   }
   
-  func showAllField(){
-    tipRateView.alpha = 1
-    tipAmountView.alpha = 1
-    totalView.alpha = 1
-    totalForTwoView.alpha = 1
-    totalForThreeView.alpha = 1
-    totalForFourView.alpha = 1
+  func showAllField(duration:Double){
+    UIView.animateWithDuration(duration, animations: {
+      self.tipRateView.alpha = 1
+      self.tipAmountView.alpha = 1
+      self.totalView.alpha = 1
+      self.totalForTwoView.alpha = 1
+      self.totalForThreeView.alpha = 1
+      self.totalForFourView.alpha = 1
+    })
   }
   
   func resizeBillFieldToSmall(){
