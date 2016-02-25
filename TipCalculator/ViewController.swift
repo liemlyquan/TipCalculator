@@ -10,12 +10,11 @@ import UIKit
 
 class ViewController: UIViewController {
   @IBOutlet weak var billFieldView: UIView!
+  @IBOutlet weak var billAmountLabel: UILabel!
   @IBOutlet weak var billField: UITextField!
   
   @IBOutlet weak var tipRateView: UIView!
   @IBOutlet weak var tipRateLabel: UILabel!
-  
-  @IBOutlet weak var tipAmountView: UIView!
   @IBOutlet weak var tipAmountLabel: UILabel!
   
   @IBOutlet weak var totalView: UIView!
@@ -57,7 +56,7 @@ class ViewController: UIViewController {
     userDefaults = NSUserDefaults.standardUserDefaults()
     if (userDefaults.objectForKey("defaultTipRate") != nil){
       tipRate = userDefaults.integerForKey("defaultTipRate")
-      tipRateLabel.text = "\(tipRate)%"
+      tipRateLabel.text = "Tip (\(tipRate)%)"
     }
 
   }
@@ -104,7 +103,7 @@ class ViewController: UIViewController {
     } else if (tipRate > 100){
       tipRate = 100
     }
-    tipRateLabel.text = "\(tipRate)%"
+    tipRateLabel.text = "Tip (\(tipRate)%)"
   }
 
   func calculate(){
@@ -115,16 +114,17 @@ class ViewController: UIViewController {
       resizeBillFieldToSmall()
       billAmount = NSString(string: billField.text!.stringByReplacingOccurrencesOfString(",", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)).doubleValue
       print(billField.text)
+      let tip = billAmount * Double(tipRate) / 100
+      tipAmountLabel.text = formatter.stringFromNumber(tip)
+      let total = billAmount + tip
+      billField.text = billFieldFormatter.stringFromNumber(billAmount)
+      
+      changeTotalLabel(totalLabel, total: total, numberOfPeople: 1)
+      changeTotalLabel(totalForTwoLabel, total: total, numberOfPeople: 2)
+      changeTotalLabel(totalForThreeLabel, total: total, numberOfPeople: 3)
+      changeTotalLabel(totalForFourLabel, total: total, numberOfPeople: 4)
     }
-    let tip = billAmount * Double(tipRate) / 100
-    tipAmountLabel.text = String(tip)
-    let total = billAmount + tip
-    billField.text = billFieldFormatter.stringFromNumber(billAmount)
 
-    changeTotalLabel(totalLabel, total: total, numberOfPeople: 1)
-    changeTotalLabel(totalForTwoLabel, total: total, numberOfPeople: 2)
-    changeTotalLabel(totalForThreeLabel, total: total, numberOfPeople: 3)
-    changeTotalLabel(totalForFourLabel, total: total, numberOfPeople: 4)
   }
   
   func changeTotalLabel(label:UILabel, total:Double, numberOfPeople:Int){
@@ -134,7 +134,6 @@ class ViewController: UIViewController {
   func hideAllField(duration:Double){
     UIView.animateWithDuration(duration, animations: {
       self.tipRateView.alpha = 0
-      self.tipAmountView.alpha = 0
       self.totalView.alpha = 0
       self.totalForTwoView.alpha = 0
       self.totalForThreeView.alpha = 0
@@ -145,7 +144,6 @@ class ViewController: UIViewController {
   func showAllField(duration:Double){
     UIView.animateWithDuration(duration, animations: {
       self.tipRateView.alpha = 1
-      self.tipAmountView.alpha = 1
       self.totalView.alpha = 1
       self.totalForTwoView.alpha = 1
       self.totalForThreeView.alpha = 1
@@ -155,16 +153,14 @@ class ViewController: UIViewController {
   
   func resizeBillFieldToSmall(){
     billFieldView.frame.size.height = 104
+    billAmountLabel.frame.size.height = 104
     billField.frame.size.height = 104
-    billFieldView.backgroundColor = UIColor.greenColor()
   }
   
   func resizeBillFieldToBig(){
     billFieldView.frame.size.height = 294
+    billAmountLabel.frame.size.height = 294
     billField.frame.size.height = 294
-    billFieldView.backgroundColor = UIColor.whiteColor()
   }
-  
-  
 }
 
