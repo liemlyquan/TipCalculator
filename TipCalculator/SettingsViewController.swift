@@ -67,6 +67,8 @@ class SettingsViewController: UIViewController {
       let refreshAlert = UIAlertController(title: "Apply new tip rate", message: "Tip rate is changed. Would you like to apply that immediately?", preferredStyle: UIAlertControllerStyle.Alert)
       
       refreshAlert.addAction(UIAlertAction(title: "OK", style: .Default, handler: { (action: UIAlertAction!) in
+        self.userDefaults.setBool(true, forKey: "tipRateChanged")
+        self.userDefaults.synchronize()
         self.navigationController?.popViewControllerAnimated(true)
         
       }))

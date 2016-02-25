@@ -39,8 +39,6 @@ class ViewController: UIViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    hideAllField(0)
-    resizeBillFieldToBig()
     
     formatter.numberStyle = .CurrencyStyle
     formatter.maximumFractionDigits = 2
@@ -58,17 +56,30 @@ class ViewController: UIViewController {
       tipRate = userDefaults.integerForKey("defaultTipRate")
       tipRateLabel.text = "Tip (\(tipRate)%)"
     }
+    
+    // Close keyboard to avoid bill amount field erro
+    NSNotificationCenter.defaultCenter().addObserver(self, selector: "applicationWillResign:", name: UIApplicationWillResignActiveNotification , object: nil)
 
   }
   
+  @objc func applicationWillResign(notification: NSNotification){
+    view.endEditing(true)
+  }
+  
   override func viewWillAppear(animated: Bool) {
-    super.viewWillAppear(false)
+    formatter.numberStyle = .CurrencyStyle
     if (userDefaults.boolForKey("thousandSeparator") == true){
       formatter.usesGroupingSeparator = true
       billFieldFormatter.usesGroupingSeparator = true
     } else {
       formatter.usesGroupingSeparator = false
       billFieldFormatter.usesGroupingSeparator = false
+    }
+    if (userDefaults.boolForKey("tipRateChanged") == true){
+      userDefaults.setBool(false, forKey: "tipRateChanged")
+      userDefaults.synchronize()
+      tipRate = userDefaults.integerForKey("defaultTipRate")
+      tipRateLabel.text = "Tip (\(tipRate)%)"
     }
     calculate()
     
@@ -78,10 +89,13 @@ class ViewController: UIViewController {
   override func viewDidAppear(animated: Bool) {
     billField.becomeFirstResponder()
   }
+  
+  override func viewWillDisappear(animated: Bool) {
+  }
   @IBAction func onTap(sender: AnyObject) {
     view.endEditing(true)
   }
-
+  
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
   }
@@ -111,7 +125,6 @@ class ViewController: UIViewController {
       hideAllField(0)
     } else {
       showAllField(0)
-      resizeBillFieldToSmall()
       billAmount = NSString(string: billField.text!.stringByReplacingOccurrencesOfString(",", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)).doubleValue
       print(billField.text)
       let tip = billAmount * Double(tipRate) / 100
@@ -151,16 +164,5 @@ class ViewController: UIViewController {
     })
   }
   
-  func resizeBillFieldToSmall(){
-    billFieldView.frame.size.height = 104
-    billAmountLabel.frame.size.height = 104
-    billField.frame.size.height = 104
-  }
-  
-  func resizeBillFieldToBig(){
-    billFieldView.frame.size.height = 294
-    billAmountLabel.frame.size.height = 294
-    billField.frame.size.height = 294
-  }
 }
 
